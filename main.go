@@ -6,11 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"ModaVane/core"
-	p_application "ModaVane/payments/aplication"
+	core "ModaVane/payments/core"
+	p_application "ModaVane/payments/application"
 	p_adapters "ModaVane/payments/infraestructure/adapters"
 	p_controllers "ModaVane/payments/infraestructure/http/controllers"
 	p_routes "ModaVane/payments/infraestructure/http/routes"
+
 )
 
 func CORS() gin.HandlerFunc {
