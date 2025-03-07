@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/rabbitmq/amqp091-go"
+
 )
 
 type RabbitMQBroker struct {
