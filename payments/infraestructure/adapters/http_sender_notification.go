@@ -22,7 +22,7 @@ func NewHTTPSenderNotification(host string, port int) *HTTPSenderNotification {
 }
 
 func (s *HTTPSenderNotification) SendNotification(data map[string]interface{}) error {
-	endpoint := fmt.Sprintf("http://%s:%d", s.Host, s.Port)
+	endpoint := fmt.Sprintf("http://%s:%d/emit-event", s.Host, s.Port)
 	
 	requestByte, err := json.Marshal(data)
 	if err != nil {

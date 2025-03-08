@@ -1,6 +1,8 @@
 package aplication
 
 import (
+	"time"
+
 	"ModaVane/payments/domain"
 	"ModaVane/payments/domain/ports"
 )
@@ -11,7 +13,10 @@ type CreatePaymentUseCase struct {
 }
 
 func NewCreatePaymentUseCase(repo ports.PaymentRepository, senderNotification ports.SenderNotification) *CreatePaymentUseCase {
-	return &CreatePaymentUseCase{repo: repo, senderNotification: senderNotification}
+	return &CreatePaymentUseCase{
+		repo:               repo,
+		senderNotification: senderNotification,
+	}
 }
 
 func (uc *CreatePaymentUseCase) Execute(payment domain.Payment) (int, error) {
@@ -20,10 +25,14 @@ func (uc *CreatePaymentUseCase) Execute(payment domain.Payment) (int, error) {
 		return 0, err
 	}
 
+	//aqui agrego la notificacion
+	time.Sleep(5 * time.Second)
+
 	err = uc.senderNotification.SendNotification(map[string]interface{}{
-		"event": "new-order",
+		"event": "new-payment",
 		"data":  idPago,
 	})
+
 	if err != nil {
 		return idPago, err
 	}
