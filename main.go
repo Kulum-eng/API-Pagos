@@ -57,5 +57,5 @@ func main() {
 	createPaymentController := p_controllers.NewPaymentController(createPaymentUseCase, getPaymentUseCase, updatePaymentUseCase, deletePaymentUseCase)
 	p_routes.SetupPaymentRoutes(myGin, createPaymentController)
 
-	myGin.Run(":8082")
+	myGin.Run(":8081")
 }
