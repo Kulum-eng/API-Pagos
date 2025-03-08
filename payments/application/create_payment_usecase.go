@@ -7,7 +7,6 @@ import (
 
 	"ModaVane/payments/domain"
 	"ModaVane/payments/domain/ports"
-
 )
 
 type CreatePaymentUseCase struct {
@@ -23,7 +22,6 @@ func NewCreatePaymentUseCase(repo ports.PaymentRepository, broker ports.Broker, 
 		senderNotification: senderNotification,
 	}
 }
-
 func (uc *CreatePaymentUseCase) Execute(payment domain.Payment) (int, error) {
 	idPago, err := uc.repo.CreatePayment(payment)
 	if err != nil {
