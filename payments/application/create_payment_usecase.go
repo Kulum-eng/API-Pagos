@@ -6,13 +6,27 @@ import (
 )
 
 type CreatePaymentUseCase struct {
-	repo ports.PaymentRepository
+	repo               ports.PaymentRepository
+	senderNotification ports.SenderNotification
 }
 
-func NewCreatePaymentUseCase(repo ports.PaymentRepository) *CreatePaymentUseCase {
-	return &CreatePaymentUseCase{repo: repo}
+func NewCreatePaymentUseCase(repo ports.PaymentRepository, senderNotification ports.SenderNotification) *CreatePaymentUseCase {
+	return &CreatePaymentUseCase{repo: repo, senderNotification: senderNotification}
 }
 
 func (uc *CreatePaymentUseCase) Execute(payment domain.Payment) (int, error) {
-	return uc.repo.CreatePayment(payment)
+	idPago, err := uc.repo.CreatePayment(payment)
+	if err != nil {
+		return 0, err
+	}
+
+	err = uc.senderNotification.SendNotification(map[string]interface{}{
+		"event": "new-order",
+		"data":  idPago,
+	})
+	if err != nil {
+		return idPago, err
+	}
+
+	return idPago, nil
 }
