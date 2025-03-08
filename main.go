@@ -32,7 +32,6 @@ func CORS() gin.HandlerFunc {
 }
 
 func main() {
-
 	gin.SetMode(gin.ReleaseMode)
 	myGin := gin.New()
 	myGin.RedirectTrailingSlash = false
@@ -41,15 +40,28 @@ func main() {
 
 	db, err := core.InitDB()
 	if err != nil {
-		log.Println(err)
+		log.Println("Error al conectar a la base de datos:", err)
+		return
+	}
+
+	rabbitBroker := p_adapters.NewRabbitMQBroker("ec2-3-83-91-51.compute-1.amazonaws.com", 5672, "ale", "ale123")
+
+	err = rabbitBroker.Connect()
+	if err != nil {
+		log.Println("Error al conectar a RabbitMQ:", err)
+		return
+	}
+
+	err = rabbitBroker.InitChannel("envios")
+	if err != nil {
+		log.Println("Error al inicializar el canal de RabbitMQ:", err)
 		return
 	}
 
 	paymentRepository := p_adapters.NewMySQLPaymentRepository(db)
 	senderNotification := p_adapters.NewHTTPSenderNotification("localhost", 3000)
-	
 
-	createPaymentUseCase := p_application.NewCreatePaymentUseCase(paymentRepository, senderNotification)
+	createPaymentUseCase := p_application.NewCreatePaymentUseCase(paymentRepository, rabbitBroker, senderNotification)
 	getPaymentUseCase := p_application.NewGetPaymentUseCase(paymentRepository)
 	updatePaymentUseCase := p_application.NewUpdatePaymentUseCase(paymentRepository)
 	deletePaymentUseCase := p_application.NewDeletePaymentUseCase(paymentRepository)
@@ -57,5 +69,7 @@ func main() {
 	createPaymentController := p_controllers.NewPaymentController(createPaymentUseCase, getPaymentUseCase, updatePaymentUseCase, deletePaymentUseCase)
 	p_routes.SetupPaymentRoutes(myGin, createPaymentController)
 
-	myGin.Run(":8081")
+	if err := myGin.Run(":8081"); err != nil {
+		log.Fatalf("Error al iniciar el servidor: %v", err)
+	}
 }
