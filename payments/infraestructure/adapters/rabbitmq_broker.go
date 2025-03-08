@@ -63,10 +63,10 @@ func (b *RabbitMQBroker) InitChannel(queueueName string) error {
 
 func (b *RabbitMQBroker) Publish(message string) error {
 	err := b.Channel.Publish(
-		"",            // Exchange
-		b.QueueueName, // Routing key (nombre de la cola)
-		false,         // Obligatorio
-		false,         // Inmediato
+		"",            
+		b.QueueueName, 
+		false,         
+		false,         
 		amqp091.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(message),
